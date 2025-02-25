@@ -56,7 +56,8 @@
     "docs:dev": "pnpm -F=docs dev",
     "docs:build": "pnpm -F=docs build",
     "docs:preview": "pnpm -F=docs preview",
-    "docs:deploy": "pnpm build-umd:prod && pnpm docs:build && gh-pages -d website"
+    "docs:deploy": "pnpm build-umd:prod && pnpm docs:build && gh-pages -d website",
+    "dev": "pnpm vite"
   },
   "engines": {
     "node": ">=0.10.0"
@@ -93,6 +94,7 @@
     "shiki": "^1.22.1",
     "tslib": "^2.6.2",
     "typescript": "^5.5.4",
+    "vite": "^6.2.0",
     "vitepress": "^2.0.0-alpha.2"
   },
   "pnpm": {
