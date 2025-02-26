@@ -14,6 +14,7 @@
 
 import { CandleColorCompareRule } from '../common/Styles'
 import { isValid } from '../common/utils/typeChecks'
+import type XAxis from '../component/XAxis'
 import type YAxis from '../component/YAxis'
 
 import View from './View'
@@ -29,6 +30,7 @@ export default class CandleLastPriceView extends View {
     const lastPriceMarkLineStyles = lastPriceMarkStyles.line
     if (priceMarkStyles.show && lastPriceMarkStyles.show && lastPriceMarkLineStyles.show) {
       const yAxis = pane.getAxisComponent() as YAxis
+      const xAxis = pane.getChart().getXAxisPane().getAxisComponent() as XAxis
       const dataList = chartStore.getDataList()
       const data = dataList[dataList.length - 1]
       if (isValid(data)) {
@@ -43,11 +45,13 @@ export default class CandleLastPriceView extends View {
         } else {
           color = lastPriceMarkStyles.noChangeColor
         }
+        const x = xAxis.convertTimestampToPixel(data.timestamp)
+
         this.createFigure({
           name: 'line',
           attrs: {
             coordinates: [
-              { x: 0, y: priceY },
+              { x, y: priceY },
               { x: bounding.width, y: priceY }
             ]
           },
