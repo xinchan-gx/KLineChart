@@ -36,8 +36,10 @@ import YAxisImp, { type YAxis } from '../component/YAxis'
 export default abstract class DrawPane<C extends Axis = Axis> extends Pane {
   private readonly _mainWidget: DrawWidget<DrawPane<C>>
   private readonly _yAxisWidget: Nullable<YAxisWidget> = null
+  private readonly _leftYAxisWidget: Nullable<YAxisWidget> = null
 
   private _axis: C
+  private _leftAxis: C
 
   private readonly _options: DeepRequired<PaneOptions> = {
     id: '',
@@ -46,7 +48,8 @@ export default abstract class DrawPane<C extends Axis = Axis> extends Pane {
     order: 0,
     height: PANE_DEFAULT_HEIGHT,
     state: PaneState.Normal,
-    axis: { name: 'normal', scrollZoomEnabled: true }
+    axis: { name: 'normal', scrollZoomEnabled: true },
+    leftAxis: { name: 'normal', scrollZoomEnabled: true }
   }
 
   constructor (chart: Chart, id: string, options: Omit<PaneOptions, 'id' | 'height'>) {
@@ -54,6 +57,7 @@ export default abstract class DrawPane<C extends Axis = Axis> extends Pane {
     const container = this.getContainer()
     this._mainWidget = this.createMainWidget(container)
     this._yAxisWidget = this.createYAxisWidget(container)
+    this._leftYAxisWidget = this.createYAxisWidget(container)
     this.setOptions(options)
   }
 
@@ -67,18 +71,37 @@ export default abstract class DrawPane<C extends Axis = Axis> extends Pane {
       ) {
         this._axis = this.createAxisComponent(axisName ?? 'normal')
       }
+
+      const leftAxisName = options.leftAxis?.name
+      if (
+        !isValid(this._leftAxis) ||
+        (isValid(leftAxisName) && this._options.leftAxis.name !== leftAxisName)
+      ) {
+        this._leftAxis = this.createAxisComponent(leftAxisName ?? 'normal')
+      }
     } else {
       if (!isValid(this._axis)) {
         this._axis = this.createAxisComponent('normal')
+      }
+
+      if (!isValid(this._leftAxis)) {
+        this._leftAxis = this.createAxisComponent('normal')
       }
     }
     if (this._axis instanceof YAxisImp) {
       this._axis.setAutoCalcTickFlag(true)
     }
+    if (this._leftAxis instanceof YAxisImp) {
+      this._leftAxis.setAutoCalcTickFlag(true)
+    }
     merge(this._options, options)
     this._axis.override({
       ...this._options.axis,
       name: options.axis?.name ?? 'normal'
+    })
+    this._leftAxis.override({
+      ...this._options.leftAxis,
+      name: options.leftAxis?.name ?? 'normal'
     })
     let container: Nullable<HTMLElement> = null
     let cursor = 'default'
@@ -101,6 +124,10 @@ export default abstract class DrawPane<C extends Axis = Axis> extends Pane {
 
   getAxisComponent (): C {
     return this._axis
+  }
+
+  getLeftAxisComponent (): C {
+    return this._leftAxis
   }
 
   override setBounding (
@@ -143,6 +170,15 @@ export default abstract class DrawPane<C extends Axis = Axis> extends Pane {
         }
       }
     }
+
+    if (isValid(this._leftYAxisWidget)) {
+      this._leftYAxisWidget.setBounding(contentBounding)
+
+      if (isValid(leftYAxisBounding)) {
+        this._leftYAxisWidget.setBounding({ ...leftYAxisBounding, left: 0 })
+      }
+    }
+
     return this
   }
 
@@ -153,11 +189,13 @@ export default abstract class DrawPane<C extends Axis = Axis> extends Pane {
   override updateImp (level: UpdateLevel): void {
     this._mainWidget.update(level)
     this._yAxisWidget?.update(level)
+    this._leftYAxisWidget?.update(level)
   }
 
   destroy (): void {
     this._mainWidget.destroy()
     this._yAxisWidget?.destroy()
+    this._leftYAxisWidget?.destroy()
   }
 
   override getImage (includeOverlay: boolean): HTMLCanvasElement {

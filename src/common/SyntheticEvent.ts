@@ -760,7 +760,6 @@ export default class SyntheticEvent {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     this._target.addEventListener('mousedown', this._mouseDownHandler.bind(this))
     this._initPinch()
-
     // Hey mobile Safari, what's up?
     // If mobile Safari doesn't have any touchmove handler with passive=false
     // it treats a touchstart and the following touchmove events as cancelable=false,
@@ -806,6 +805,7 @@ export default class SyntheticEvent {
   }
 
   private _checkPinchState (touches: TouchList): void {
+    console.log(touches)
     if (touches.length === 1) {
       this._pinchPrevented = false
     }
@@ -818,6 +818,7 @@ export default class SyntheticEvent {
   }
 
   private _startPinch (touches: TouchList): void {
+    console.log(touches)
     const box = this._target.getBoundingClientRect()
     this._startPinchMiddleCoordinate = {
       x: ((touches[0].clientX - box.left) + (touches[1].clientX - box.left)) / 2,

@@ -28,6 +28,7 @@ export interface PaneOptions {
   order?: number
   state?: PaneState,
   axis?: Partial<AxisCreate>
+  leftAxis?: Partial<AxisCreate>
 }
 
 export const PANE_MIN_HEIGHT = 30

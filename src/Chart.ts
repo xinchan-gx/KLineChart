@@ -421,14 +421,21 @@ export default class ChartImp implements Chart {
       this._drawPanes.forEach(pane => {
         if (pane.getId() !== PaneIdConstants.X_AXIS) {
           const yAxis = pane.getAxisComponent() as YAxis
+          const leftAxis = pane.getLeftAxisComponent() as YAxis
           const inside = yAxis.inside
-          const yAxisWidth = yAxis.getAutoSize()
-          if (yAxis.position === AxisPosition.Left) {
-            leftYAxisWidth = Math.max(leftYAxisWidth, yAxisWidth)
+
+          if (leftAxis.position === AxisPosition.Left) {
+            const _leftYAxisWidth = leftAxis.getAutoSize()
+            console.log('🚀 ~ ChartImp ~ _layout ~ _leftYAxisWidth:', _leftYAxisWidth)
+            leftYAxisWidth = Math.max(leftYAxisWidth, _leftYAxisWidth)
             if (inside) {
               leftYAxisOutside = false
             }
-          } else {
+          }
+
+          if (yAxis.position === AxisPosition.Right) {
+            const yAxisWidth = yAxis.getAutoSize()
+            console.log('🚀 ~ ChartImp ~ _layout ~ yAxisWidth:', yAxisWidth)
             rightYAxisWidth = Math.max(rightYAxisWidth, yAxisWidth)
             if (inside) {
               rightYAxisOutside = false
@@ -467,6 +474,7 @@ export default class ChartImp implements Chart {
       }
       this._drawPanes.forEach((pane) => {
         this._separatorPanes.get(pane)?.setBounding(separatorBounding)
+        console.log(paneBounding, mainBounding, leftYAxisBounding, rightYAxisBounding)
         pane.setBounding(paneBounding, mainBounding, leftYAxisBounding, rightYAxisBounding)
       })
     }

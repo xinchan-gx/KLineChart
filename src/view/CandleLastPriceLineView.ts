@@ -38,13 +38,27 @@ export default class CandleLastPriceView extends View {
         const comparePrice = lastPriceMarkStyles.compareRule === CandleColorCompareRule.CurrentOpen ? open : (dataList[dataList.length - 2]?.close ?? close)
         const priceY = yAxis.convertToNicePixel(close)
         let color = ''
-        if (close > comparePrice) {
-          color = lastPriceMarkStyles.upColor
-        } else if (close < comparePrice) {
-          color = lastPriceMarkStyles.downColor
+        if (yAxis.name === 'percentage') {
+          const precision = chartStore.getPrecision()
+          const yAxisRange = yAxis.getRange()
+          const text = yAxis.displayValueToText(
+            yAxis.realValueToDisplayValue(
+              yAxis.valueToRealValue(close, { range: yAxisRange }),
+              { range: yAxisRange }
+            ),
+            precision.price
+          )
+          color = Number.parseInt(text) > 0 ? lastPriceMarkStyles.upColor : lastPriceMarkStyles.downColor
         } else {
-          color = lastPriceMarkStyles.noChangeColor
+          if (close > comparePrice) {
+            color = lastPriceMarkStyles.upColor
+          } else if (close < comparePrice) {
+            color = lastPriceMarkStyles.downColor
+          } else {
+            color = lastPriceMarkStyles.noChangeColor
+          }
         }
+
         const x = xAxis.convertTimestampToPixel(data.timestamp)
 
         this.createFigure({

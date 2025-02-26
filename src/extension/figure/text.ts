@@ -12,10 +12,12 @@
  * limitations under the License.
  */
 
+import type Chart from '../../Chart'
 import type Coordinate from '../../common/Coordinate'
 import type { TextStyle } from '../../common/Styles'
 
 import { createFont, calcTextWidth } from '../../common/utils/canvas'
+import { isArray, isFunction, isString } from '../../common/utils/typeChecks'
 
 import type { FigureTemplate } from '../../component/Figure'
 
@@ -81,7 +83,7 @@ export function checkCoordinateOnText (coordinate: Coordinate, attrs: TextAttrs 
   return false
 }
 
-export function drawText (ctx: CanvasRenderingContext2D, attrs: TextAttrs | TextAttrs[], styles: Partial<TextStyle>): void {
+export function drawText (ctx: CanvasRenderingContext2D, attrs: TextAttrs | TextAttrs[], styles: Partial<TextStyle>, chart?: Chart): void {
   let texts: TextAttrs[] = []
   texts = texts.concat(attrs)
   const {
@@ -94,14 +96,30 @@ export function drawText (ctx: CanvasRenderingContext2D, attrs: TextAttrs | Text
     paddingRight = 0
   } = styles
   const rects = texts.map(text => getTextRect(text, styles))
-  drawRect(ctx, rects, { ...styles, color: styles.backgroundColor })
+  let bgColor: string | CanvasGradient | Array<string | CanvasGradient> = styles.backgroundColor as string
+
+  if (isFunction(styles.backgroundColor) && chart !== undefined) {
+    bgColor = texts.map(text => styles.backgroundColor(text.text, chart) as string)
+  }
+
+  if (!isArray(bgColor)) {
+    drawRect(ctx, rects, { ...styles, color: bgColor })
+  } else {
+    rects.forEach((rect, index) => {
+      drawRect(ctx, rect, { ...styles, color: bgColor[index] })
+    })
+  }
 
   ctx.textAlign = 'left'
   ctx.textBaseline = 'top'
   ctx.font = createFont(size, weight, family)
-  ctx.fillStyle = color
 
   texts.forEach((text, index) => {
+    if (isFunction(styles.color) && chart !== undefined) {
+      ctx.fillStyle = styles.color(ctx, text.text, chart)
+    } else {
+      ctx.fillStyle = color as string
+    }
     const rect = rects[index]
     ctx.fillText(text.text, rect.x + paddingLeft, rect.y + paddingTop, rect.width - paddingLeft - paddingRight)
   })
@@ -120,8 +138,8 @@ export interface TextAttrs {
 const text: FigureTemplate<TextAttrs | TextAttrs[], Partial<TextStyle>> = {
   name: 'text',
   checkEventOn: checkCoordinateOnText,
-  draw: (ctx: CanvasRenderingContext2D, attrs: TextAttrs | TextAttrs[], styles: Partial<TextStyle>) => {
-    drawText(ctx, attrs, styles)
+  draw: (ctx: CanvasRenderingContext2D, attrs: TextAttrs | TextAttrs[], styles: Partial<TextStyle>, chart?: Chart) => {
+    drawText(ctx, attrs, styles, chart)
   }
 }
 

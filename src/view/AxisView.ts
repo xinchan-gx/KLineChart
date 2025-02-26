@@ -51,11 +51,12 @@ export default abstract class AxisView<C extends Axis = Axis> extends View<C> {
         }
         if (styles.tickText.show) {
           const texts = this.createTickTexts(ticks, bounding, styles)
+          const chart = this.getWidget().getPane().getChart()
           this.createFigure({
             name: 'text',
             attrs: texts,
             styles: styles.tickText
-          })?.draw(ctx)
+          })?.draw(ctx, chart)
         }
       }
     }

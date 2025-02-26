@@ -3,13 +3,63 @@ import { AxisPosition } from "./src/component/Axis"
 import { LayoutChildType } from "./src/Options"
 
 const chart = init('chart-container', {
+  styles: {
+    yAxis: {
+      tickText: {
+        color: (ctx, text, chart) => {
+          if(text.endsWith('%')){
+            if(parseInt(text) > 0){
+              return 'green'
+            }else{
+              return 'red'
+            }
+          }
+
+          const data = chart.getChartStore().getDataList()
+          const range = chart.getChartStore().getVisibleRange()
+          const startData = data[range.from]
+          if(!startData){
+            return 'transparent'
+          }
+          return Number.parseInt(text) > startData.close ? 'green' : 'red'
+        }
+      }
+    },
+    crosshair: {
+      horizontal: {
+        text: {
+          color: '#fff',
+          backgroundColor: (text, chart) => {
+            if(text.endsWith('%')){
+              if(parseInt(text) > 0){
+                return 'green'
+              }else{
+                return 'red'
+              }
+            }
+            const data = chart.getChartStore().getDataList()
+            const range = chart.getChartStore().getVisibleRange()
+            const startData = data[range.from]
+
+            if(!startData){
+              return 'transparent'
+            }
+            
+            return Number.parseInt(text) > startData.close ? 'green' : 'red'
+          }
+        }
+      }
+    }
+  },
   layout: [
     {
       type: LayoutChildType.Candle,
       options: {
         axis: {
-          name: 'percentage',
           position: AxisPosition.Right
+        },
+        leftAxis: {
+          position: AxisPosition.Left
         }
       }
     }

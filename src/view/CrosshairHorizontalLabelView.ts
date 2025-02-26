@@ -47,7 +47,7 @@ export default class CrosshairHorizontalLabelView<C extends Axis = YAxis> extend
             name: 'text',
             attrs: this.getTextAttrs(text, ctx.measureText(text).width, crosshair, bounding, axis, textStyles),
             styles: textStyles
-          })?.draw(ctx)
+          })?.draw(ctx, pane.getChart())
         }
       }
     }
