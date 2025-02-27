@@ -9,6 +9,9 @@ const chart = init('chart-container', {
        color: (a) => {
           return undefined
        }
+      },
+      tooltip: {
+        showType: 'rect'
       }
     },
     yAxis: {
@@ -24,7 +27,6 @@ const chart = init('chart-container', {
 
           const data = chart.getDataList()
           const range = chart.getVisibleRange()
-          console.log(data)
           const startData = data[range.from]
           if(!startData){
             return 'transparent'

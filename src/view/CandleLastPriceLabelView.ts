@@ -40,7 +40,6 @@ export default class CandleLastPriceLabelView extends View {
         const { close, open } = data
         const comparePrice = lastPriceMarkStyles.compareRule === CandleColorCompareRule.CurrentOpen ? open : (dataList[dataList.length - 2]?.close ?? close)
         const priceY = yAxis.convertToNicePixel(close)
-        // console.log(pane.getYAxisWidget())
         let backgroundColor = ''
         if (close > comparePrice) {
           backgroundColor = lastPriceMarkStyles.upColor
@@ -69,7 +68,7 @@ export default class CandleLastPriceLabelView extends View {
         }
 
         if (yAxis.name === 'percentage') {
-          backgroundColor = Number.parseInt(text) > 0 ? lastPriceMarkStyles.upColor : lastPriceMarkStyles.downColor
+          backgroundColor = Number.parseFloat(text) > 0 ? lastPriceMarkStyles.upColor : lastPriceMarkStyles.downColor
         }
 
         this.createFigure({
