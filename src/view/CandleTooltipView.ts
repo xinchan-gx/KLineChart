@@ -373,7 +373,7 @@ export default class CandleTooltipView extends IndicatorTooltipView {
     const dataIndex = chartStore.getCrosshair().dataIndex ?? 0
 
     const tooltipStyles = styles.tooltip
-    const textColor = tooltipStyles.text.color
+    const textColor = tooltipStyles.text.color as string
     const prev = dataList[dataIndex - 1] ?? null
     const current = dataList[dataIndex]
 

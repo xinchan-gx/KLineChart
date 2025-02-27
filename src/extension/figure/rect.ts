@@ -12,7 +12,6 @@
  * limitations under the License.
  */
 
-import type Chart from '../../Chart'
 import type Coordinate from '../../common/Coordinate'
 import { type RectStyle, PolygonType, LineType } from '../../common/Styles'
 import { isTransparent } from '../../common/utils/color'
@@ -48,7 +47,7 @@ export function checkCoordinateOnRect (coordinate: Coordinate, attrs: RectAttrs 
   return false
 }
 
-export function drawRect (ctx: CanvasRenderingContext2D, attrs: RectAttrs | RectAttrs[], styles: Partial<RectStyle>, chart?: Chart): void {
+export function drawRect (ctx: CanvasRenderingContext2D, attrs: RectAttrs | RectAttrs[], styles: Partial<RectStyle>): void {
   let rects: RectAttrs[] = []
   rects = rects.concat(attrs)
   const {
@@ -108,8 +107,8 @@ export interface RectAttrs {
 const rect: FigureTemplate<RectAttrs | RectAttrs[], Partial<RectStyle>> = {
   name: 'rect',
   checkEventOn: checkCoordinateOnRect,
-  draw: (ctx: CanvasRenderingContext2D, attrs: RectAttrs | RectAttrs[], styles: Partial<RectStyle>, chart?: Chart) => {
-    drawRect(ctx, attrs, styles, chart)
+  draw: (ctx: CanvasRenderingContext2D, attrs: RectAttrs | RectAttrs[], styles: Partial<RectStyle>) => {
+    drawRect(ctx, attrs, styles)
   }
 }
 

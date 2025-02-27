@@ -64,9 +64,9 @@ export default class CandleBarView extends ChildrenView {
           const colors: string[] = []
 
           let customColor: string | undefined = ''
-
-          if (isFunction(this.getCandleBarOptions()?.styles.color)) {
-            customColor = this.getCandleBarOptions()?.styles.color(current, this.getWidget().getPane().getChart())
+          const colorFn = this.getCandleBarOptions()?.styles.color
+          if (isFunction(colorFn)) {
+            customColor = colorFn(current, this.getWidget().getPane().getChart())
           }
           if (close > comparePrice) {
             colors[0] = customColor ?? styles.upColor

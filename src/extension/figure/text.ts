@@ -17,7 +17,7 @@ import type Coordinate from '../../common/Coordinate'
 import type { TextStyle } from '../../common/Styles'
 
 import { createFont, calcTextWidth } from '../../common/utils/canvas'
-import { isArray, isFunction, isString } from '../../common/utils/typeChecks'
+import { isArray, isFunction } from '../../common/utils/typeChecks'
 
 import type { FigureTemplate } from '../../component/Figure'
 
@@ -99,7 +99,7 @@ export function drawText (ctx: CanvasRenderingContext2D, attrs: TextAttrs | Text
   let bgColor: string | CanvasGradient | Array<string | CanvasGradient> = styles.backgroundColor as string
 
   if (isFunction(styles.backgroundColor) && chart !== undefined) {
-    bgColor = texts.map(text => styles.backgroundColor(text.text, chart) as string)
+    bgColor = texts.map(text => (styles.backgroundColor as (text: string, chart: Chart) => string | CanvasGradient)(text.text, chart) as string)
   }
 
   if (!isArray(bgColor)) {

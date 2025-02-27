@@ -7,7 +7,7 @@ const chart = init('chart-container', {
     candle: {
       bar: {
        color: (a) => {
-          
+          return undefined
        }
       }
     },

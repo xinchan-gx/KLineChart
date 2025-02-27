@@ -246,7 +246,7 @@ export interface CandleBarColor extends ChangeColor {
   upWickColor: string
   downWickColor: string
   noChangeWickColor: string
-  color: (data: KLineData, chart: Chart) => string
+  color?: (data: KLineData, chart: Chart) => string | undefined
 }
 
 export interface CandleStyle {

@@ -92,8 +92,8 @@ export default class IndicatorTooltipView extends View<YAxis> {
               ctx,
               [
                 {
-                  title: { text: '', color: tooltipTextStyles.color },
-                  value: { text, color: tooltipTextStyles.color }
+                  title: { text: '', color: tooltipTextStyles.color as string },
+                  value: { text, color: tooltipTextStyles.color as string }
                 }
               ],
               coordinate, left, prevRowHeight, maxWidth, tooltipTextStyles
@@ -304,7 +304,7 @@ export default class IndicatorTooltipView extends View<YAxis> {
       }
       if (isValid(customLegends) && indicator.visible) {
         const optimizedLegends: TooltipLegend[] = []
-        const color = styles.tooltip.text.color
+        const color = styles.tooltip.text.color as string
         customLegends.forEach(data => {
           let title = { text: '', color }
           if (isObject(data.title)) {
