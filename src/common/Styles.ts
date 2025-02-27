@@ -15,6 +15,7 @@
 import type Nullable from './Nullable'
 import type { KLineData, NeighborData } from './Data'
 import { hexToRgb } from './utils/color'
+import type { Chart } from '../Chart'
 
 export interface Margin {
   marginLeft: number
@@ -81,7 +82,7 @@ export interface RectStyle extends PolygonStyle {
 
 export interface TextStyle extends Padding {
   style: PolygonType
-  color: string | ((ctx: CanvasRenderingContext2D, text: string, chart: unknown) => string)
+  color: string | ((ctx: CanvasRenderingContext2D, text: string, chart: Chart) => string)
   size: number
   family: string
   weight: number | string
@@ -90,7 +91,7 @@ export interface TextStyle extends Padding {
   borderSize: number
   borderColor: string
   borderRadius: number | number[]
-  backgroundColor: string | CanvasGradient | ((text: string, chart: unknown) => string | CanvasGradient)
+  backgroundColor: string | CanvasGradient | ((text: string, chart: Chart) => string | CanvasGradient)
 }
 
 export interface StateTextStyle extends TextStyle {
@@ -245,7 +246,7 @@ export interface CandleBarColor extends ChangeColor {
   upWickColor: string
   downWickColor: string
   noChangeWickColor: string
-  color?: (data: KLineData, chart: unknown) => string | undefined
+  color?: (data: KLineData, chart: Chart) => string | undefined
 }
 
 export interface CandleStyle {

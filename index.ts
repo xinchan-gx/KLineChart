@@ -22,8 +22,8 @@ const chart = init('chart-container', {
             }
           }
 
-          const data = chart.getChartStore().getDataList()
-          const range = chart.getChartStore().getVisibleRange()
+          const data = chart.getDataList()
+          const range = chart.getVisibleRange()
           const startData = data[range.from]
           if(!startData){
             return 'transparent'
@@ -44,8 +44,8 @@ const chart = init('chart-container', {
                 return 'red'
               }
             }
-            const data = chart.getChartStore().getDataList()
-            const range = chart.getChartStore().getVisibleRange()
+            const data = chart.getDataList()
+            const range = chart.getVisibleRange()
             const startData = data[range.from]
 
             if(!startData){

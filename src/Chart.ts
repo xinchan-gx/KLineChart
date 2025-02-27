@@ -101,7 +101,12 @@ export interface Chart extends Store {
   subscribeAction: (type: ActionType, callback: ActionCallback) => void
   unsubscribeAction: (type: ActionType, callback?: ActionCallback) => void
   getConvertPictureUrl: (includeOverlay?: boolean, type?: 'png' | 'jpeg' | 'bmp', backgroundColor?: string) => string
-  resize: () => void
+  // getContainer: () => HTMLElement
+  // getChartStore: () => ChartStore
+  // getXAxisPane: () => XAxisPane
+  // getDrawPanes:() => DrawPane[]
+  // getSeparatorPanes: () => Map<DrawPane, SeparatorPane>
+  resize:() => void
 }
 
 export default class ChartImp implements Chart {
