@@ -48,7 +48,7 @@ export default class CandleLastPriceView extends View {
             ),
             precision.price
           )
-          color = Number.parseInt(text) > 0 ? lastPriceMarkStyles.upColor : lastPriceMarkStyles.downColor
+          color = Number.parseFloat(text) > 0 ? lastPriceMarkStyles.upColor : lastPriceMarkStyles.downColor
         } else {
           if (close > comparePrice) {
             color = lastPriceMarkStyles.upColor
