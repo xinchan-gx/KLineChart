@@ -24,6 +24,7 @@ const chart = init('chart-container', {
 
           const data = chart.getDataList()
           const range = chart.getVisibleRange()
+          console.log(data)
           const startData = data[range.from]
           if(!startData){
             return 'transparent'
@@ -117,7 +118,8 @@ document.querySelector('#btn-reset')?.addEventListener('click', () => {
       low: item[4],
       close: item[2],
       volume: item[5],
-      turnover: item[6]
+      turnover: item[6],
+      prevClose: item[7]
     }))
 
     chart?.applyNewData(candlesticks)

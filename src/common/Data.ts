@@ -28,6 +28,7 @@ export interface KLineData {
   close: number
   volume?: number
   turnover?: number
+  prevClose: number
   [key: string]: unknown
 }
 
