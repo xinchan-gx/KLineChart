@@ -19,8 +19,11 @@ import View from './View'
 
 import type YAxis from '../component/YAxis'
 
+type IsLeftYAxis = boolean
+type DrawImpExtend = [IsLeftYAxis]
+
 export default class CandleLastPriceLabelView extends View {
-  override drawImp (ctx: CanvasRenderingContext2D): void {
+  override drawImp (ctx: CanvasRenderingContext2D, arg?: DrawImpExtend): void {
     const widget = this.getWidget()
     const pane = widget.getPane()
     const bounding = widget.getBounding()
@@ -30,7 +33,7 @@ export default class CandleLastPriceLabelView extends View {
     const lastPriceMarkTextStyles = lastPriceMarkStyles.text
     if (priceMarkStyles.show && lastPriceMarkStyles.show && lastPriceMarkTextStyles.show) {
       const precision = chartStore.getPrecision()
-      const yAxis = pane.getAxisComponent() as YAxis
+      const yAxis = pane.getAxisComponent(arg?.[0]) as YAxis
       const dataList = chartStore.getDataList()
       const data = dataList[dataList.length - 1]
       if (isValid(data)) {

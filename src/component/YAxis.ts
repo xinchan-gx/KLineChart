@@ -310,6 +310,7 @@ export default abstract class YAxisImp extends AxisImp implements YAxis {
         defaultTicks: optimalTicks
       })
     }
+
     return optimalTicks
   }
 

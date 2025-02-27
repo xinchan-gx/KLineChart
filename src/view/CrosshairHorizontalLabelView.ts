@@ -27,8 +27,11 @@ import type ChartStore from '../Store'
 
 import View from './View'
 
+type IsLeftYAxis = boolean
+type DrawImpExtend = [IsLeftYAxis]
+
 export default class CrosshairHorizontalLabelView<C extends Axis = YAxis> extends View<C> {
-  override drawImp (ctx: CanvasRenderingContext2D): void {
+  override drawImp (ctx: CanvasRenderingContext2D, arg?: DrawImpExtend): void {
     const widget = this.getWidget()
     const pane = widget.getPane()
     const bounding = widget.getBounding()
@@ -40,7 +43,7 @@ export default class CrosshairHorizontalLabelView<C extends Axis = YAxis> extend
         const directionStyles = this.getDirectionStyles(styles)
         const textStyles = directionStyles.text
         if (directionStyles.show && textStyles.show) {
-          const axis = pane.getAxisComponent()
+          const axis = pane.getAxisComponent(arg?.[0])
           const text = this.getText(crosshair, chartStore, axis)
           ctx.font = createFont(textStyles.size, textStyles.weight, textStyles.family)
           this.createFigure({

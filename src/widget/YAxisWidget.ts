@@ -46,6 +46,7 @@ export default class YAxisWidget extends DrawWidget<DrawPane<YAxis>> {
   override updateMain (ctx: CanvasRenderingContext2D): void {
     const minimize = this.getPane().getOptions().state === PaneState.Minimize
     this._yAxisView.draw(ctx, minimize)
+
     if (!minimize) {
       if (this.getPane().getAxisComponent().isInCandle()) {
         this._candleLastPriceLabelView.draw(ctx)

@@ -16,6 +16,7 @@ export const WidgetNameConstants = {
   MAIN: 'main',
   X_AXIS: 'xAxis',
   Y_AXIS: 'yAxis',
+  Y_LEFT_AXIS: 'yLeftAxis',
   SEPARATOR: 'separator'
 }
 

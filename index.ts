@@ -1,9 +1,16 @@
-import {init} from './src'
+import {CandleType, init} from './src'
 import { AxisPosition } from "./src/component/Axis"
 import { LayoutChildType } from "./src/Options"
 
 const chart = init('chart-container', {
   styles: {
+    candle: {
+      bar: {
+       color: (a) => {
+          
+       }
+      }
+    },
     yAxis: {
       tickText: {
         color: (ctx, text, chart) => {
@@ -54,18 +61,23 @@ const chart = init('chart-container', {
   layout: [
     {
       type: LayoutChildType.Candle,
+   
       options: {
         axis: {
-          position: AxisPosition.Right
+          position: AxisPosition.Right,
+          name: 'percentage'
         },
         leftAxis: {
-          position: AxisPosition.Left
+          position: AxisPosition.Left,
+          
         }
       }
     }
   ]
 })
-
+document.querySelector('#btn-reset')?.addEventListener('click', () => {
+  chart?.resize()
+})
 ;(async () => {
 //   {
 //     url: 'https://us.mgjkn.com/stock/chart?ticker=' + ticker + '&interval=' + interval + '&start_at=2023-10-29&_tr=1737517264_316756&gzencode=false',

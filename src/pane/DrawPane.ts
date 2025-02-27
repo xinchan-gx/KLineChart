@@ -32,11 +32,12 @@ import type Chart from '../Chart'
 import { createDom } from '../common/utils/dom'
 import { getPixelRatio } from '../common/utils/canvas'
 import YAxisImp, { type YAxis } from '../component/YAxis'
+import type YAxisLeftWidget from '../widget/YAxisLeftWidget'
 
 export default abstract class DrawPane<C extends Axis = Axis> extends Pane {
   private readonly _mainWidget: DrawWidget<DrawPane<C>>
   private readonly _yAxisWidget: Nullable<YAxisWidget> = null
-  private readonly _leftYAxisWidget: Nullable<YAxisWidget> = null
+  private readonly _leftYAxisWidget: Nullable<YAxisLeftWidget> = null
 
   private _axis: C
   private _leftAxis: C
@@ -57,7 +58,7 @@ export default abstract class DrawPane<C extends Axis = Axis> extends Pane {
     const container = this.getContainer()
     this._mainWidget = this.createMainWidget(container)
     this._yAxisWidget = this.createYAxisWidget(container)
-    this._leftYAxisWidget = this.createYAxisWidget(container)
+    this._leftYAxisWidget = this.createLeftYAxisWidget(container)
     this.setOptions(options)
   }
 
@@ -122,8 +123,8 @@ export default abstract class DrawPane<C extends Axis = Axis> extends Pane {
 
   getOptions (): DeepRequired<PaneOptions> { return this._options }
 
-  getAxisComponent (): C {
-    return this._axis
+  getAxisComponent (leftYAxis?: boolean): C {
+    return leftYAxis === true ? this._leftAxis : this._axis
   }
 
   getLeftAxisComponent (): C {
@@ -231,6 +232,8 @@ export default abstract class DrawPane<C extends Axis = Axis> extends Pane {
   protected abstract createAxisComponent (name: string): C
 
   protected createYAxisWidget (_container: HTMLElement): Nullable<YAxisWidget> { return null }
+
+  protected createLeftYAxisWidget (_container: HTMLElement): Nullable<YAxisLeftWidget> { return null }
 
   protected abstract createMainWidget (container: HTMLElement): DrawWidget<DrawPane<C>>
 }

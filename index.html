@@ -8,14 +8,16 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 
-<body style="margin: 0; overflow: hidden;">
+<body style="margin: 0; overflow: hidden; position: relative;">
 
   <main>
     <div id="chart-container" style="width: 100vw; height: 100vh;">
       <!-- Chart will be rendered here -->
     </div>
   </main>
-
+  <div style="position: absolute; top: 0; left: 0; z-index: 100; padding: 10px;">
+    <button id="btn-reset">Reset</button>
+  </div>
   <script type="module" src="index.ts"></script>
 </body>
 

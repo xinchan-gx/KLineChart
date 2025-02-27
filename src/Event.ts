@@ -128,6 +128,7 @@ export default class Event implements EventHandler {
 
   mouseWheelHortEvent (_: MouseTouchEvent, distance: number): boolean {
     const store = this._chart.getChartStore()
+
     store.startScroll()
     store.scroll(distance)
     return true
@@ -214,6 +215,7 @@ export default class Event implements EventHandler {
       return this._mouseDownWidget.dispatchEvent('pressedMouseMoveEvent', e)
     }
     const { pane, widget } = this._findWidgetByEvent(e)
+
     if (
       widget !== null &&
       this._mouseDownWidget?.getPane().getId() === pane?.getId() &&
@@ -224,6 +226,7 @@ export default class Event implements EventHandler {
       switch (name) {
         case WidgetNameConstants.MAIN: {
           const consumed = widget.dispatchEvent('pressedMouseMoveEvent', event)
+
           if (!consumed) {
             this._processMainScrollingEvent(widget as Widget<DrawPane<YAxis>>, event)
           }
@@ -311,8 +314,10 @@ export default class Event implements EventHandler {
         }
         case WidgetNameConstants.Y_AXIS: {
           const yAxis = (pane as DrawPane<YAxis>).getAxisComponent()
+          const yAxisLeft = (pane as DrawPane<YAxis>).getLeftAxisComponent()
           if (!yAxis.getAutoCalcTickFlag()) {
             yAxis.setAutoCalcTickFlag(true)
+            yAxisLeft.setAutoCalcTickFlag(true)
             this._chart.layout({
               measureWidth: true,
               update: true,
@@ -532,6 +537,7 @@ export default class Event implements EventHandler {
   private _processMainScrollingEvent (widget: Widget<DrawPane<YAxis>>, event: MouseTouchEvent): void {
     if (this._startScrollCoordinate !== null) {
       const yAxis = widget.getPane().getAxisComponent()
+      const yAxisLeft = widget.getPane().getLeftAxisComponent()
       const bounding = widget.getBounding()
       if (this._prevYAxisRange !== null && !yAxis.getAutoCalcTickFlag() && yAxis.scrollZoomEnabled) {
         const { from, to, range } = this._prevYAxisRange
@@ -545,20 +551,22 @@ export default class Event implements EventHandler {
         const difRange = range * scale
         const newFrom = from + difRange
         const newTo = to + difRange
-        const newRealFrom = yAxis.valueToRealValue(newFrom, { range: this._prevYAxisRange })
-        const newRealTo = yAxis.valueToRealValue(newTo, { range: this._prevYAxisRange })
-        const newDisplayFrom = yAxis.realValueToDisplayValue(newRealFrom, { range: this._prevYAxisRange })
-        const newDisplayTo = yAxis.realValueToDisplayValue(newRealTo, { range: this._prevYAxisRange })
-        yAxis.setRange({
-          from: newFrom,
-          to: newTo,
-          range: newTo - newFrom,
-          realFrom: newRealFrom,
-          realTo: newRealTo,
-          realRange: newRealTo - newRealFrom,
-          displayFrom: newDisplayFrom,
-          displayTo: newDisplayTo,
-          displayRange: newDisplayTo - newDisplayFrom
+        ;[yAxis, yAxisLeft].forEach(yAxis => {
+          const newRealFrom = yAxis.valueToRealValue(newFrom, { range: this._prevYAxisRange! })
+          const newRealTo = yAxis.valueToRealValue(newTo, { range: this._prevYAxisRange! })
+          const newDisplayFrom = yAxis.realValueToDisplayValue(newRealFrom, { range: this._prevYAxisRange! })
+          const newDisplayTo = yAxis.realValueToDisplayValue(newRealTo, { range: this._prevYAxisRange! })
+          yAxis.setRange({
+            from: newFrom,
+            to: newTo,
+            range: newTo - newFrom,
+            realFrom: newRealFrom,
+            realTo: newRealTo,
+            realRange: newRealTo - newRealFrom,
+            displayFrom: newDisplayFrom,
+            displayTo: newDisplayTo,
+            displayRange: newDisplayTo - newDisplayFrom
+          })
         })
       }
       const distance = event.x - this._startScrollCoordinate.x
@@ -609,6 +617,7 @@ export default class Event implements EventHandler {
     const consumed = widget.dispatchEvent('pressedMouseMoveEvent', event)
     if (!consumed) {
       const yAxis = widget.getPane().getAxisComponent()
+      const yAxisLeft = widget.getPane().getLeftAxisComponent()
       if (this._prevYAxisRange !== null && yAxis.scrollZoomEnabled) {
         const { from, to, range } = this._prevYAxisRange
         const scale = event.pageY / this._yAxisStartScaleDistance
@@ -616,25 +625,28 @@ export default class Event implements EventHandler {
         const difRange = (newRange - range) / 2
         const newFrom = from - difRange
         const newTo = to + difRange
-        const newRealFrom = yAxis.valueToRealValue(newFrom, { range: this._prevYAxisRange })
-        const newRealTo = yAxis.valueToRealValue(newTo, { range: this._prevYAxisRange })
-        const newDisplayFrom = yAxis.realValueToDisplayValue(newRealFrom, { range: this._prevYAxisRange })
-        const newDisplayTo = yAxis.realValueToDisplayValue(newRealTo, { range: this._prevYAxisRange })
-        yAxis.setRange({
-          from: newFrom,
-          to: newTo,
-          range: newRange,
-          realFrom: newRealFrom,
-          realTo: newRealTo,
-          realRange: newRealTo - newRealFrom,
-          displayFrom: newDisplayFrom,
-          displayTo: newDisplayTo,
-          displayRange: newDisplayTo - newDisplayFrom
-        })
-        this._chart.layout({
-          measureWidth: true,
-          update: true,
-          buildYAxisTick: true
+        ;[yAxis, yAxisLeft].forEach(yAxis => {
+          const newRealFrom = yAxis.valueToRealValue(newFrom, { range: this._prevYAxisRange! })
+          const newRealTo = yAxis.valueToRealValue(newTo, { range: this._prevYAxisRange! })
+          const newDisplayFrom = yAxis.realValueToDisplayValue(newRealFrom, { range: this._prevYAxisRange! })
+          const newDisplayTo = yAxis.realValueToDisplayValue(newRealTo, { range: this._prevYAxisRange! })
+          yAxis.setRange({
+            from: newFrom,
+            to: newTo,
+            range: newRange,
+            realFrom: newRealFrom,
+            realTo: newRealTo,
+            realRange: newRealTo - newRealFrom,
+            displayFrom: newDisplayFrom,
+            displayTo: newDisplayTo,
+            displayRange: newDisplayTo - newDisplayFrom
+          })
+
+          this._chart.layout({
+            measureWidth: true,
+            update: true,
+            buildYAxisTick: true
+          })
         })
       }
     } else {

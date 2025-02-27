@@ -15,7 +15,7 @@
 import type Nullable from '../common/Nullable'
 import type { VisibleRangeData } from '../common/Data'
 import type BarSpace from '../common/BarSpace'
-import { isValid } from '../common/utils/typeChecks'
+import { isFunction, isValid } from '../common/utils/typeChecks'
 import type { EventHandler } from '../common/SyntheticEvent'
 import { ActionType } from '../common/Action'
 import { CandleType, type CandleBarColor, type RectStyle, PolygonType, CandleColorCompareRule } from '../common/Styles'
@@ -62,18 +62,24 @@ export default class CandleBarView extends ChildrenView {
           const { open, high, low, close } = current
           const comparePrice = styles.compareRule === CandleColorCompareRule.CurrentOpen ? open : (prev?.close ?? close)
           const colors: string[] = []
+
+          let customColor: string | undefined = ''
+
+          if (isFunction(this.getCandleBarOptions()?.styles.color)) {
+            customColor = this.getCandleBarOptions()?.styles.color(current, this.getWidget().getPane().getChart())
+          }
           if (close > comparePrice) {
-            colors[0] = styles.upColor
-            colors[1] = styles.upBorderColor
-            colors[2] = styles.upWickColor
+            colors[0] = customColor ?? styles.upColor
+            colors[1] = customColor ?? styles.upBorderColor
+            colors[2] = customColor ?? styles.upWickColor
           } else if (close < comparePrice) {
-            colors[0] = styles.downColor
-            colors[1] = styles.downBorderColor
-            colors[2] = styles.downWickColor
+            colors[0] = customColor ?? styles.downColor
+            colors[1] = customColor ?? styles.downBorderColor
+            colors[2] = customColor ?? styles.downWickColor
           } else {
-            colors[0] = styles.noChangeColor
-            colors[1] = styles.noChangeBorderColor
-            colors[2] = styles.noChangeWickColor
+            colors[0] = customColor ?? styles.noChangeColor
+            colors[1] = customColor ?? styles.noChangeBorderColor
+            colors[2] = customColor ?? styles.noChangeWickColor
           }
           const openY = yAxis.convertToPixel(open)
           const closeY = yAxis.convertToPixel(close)

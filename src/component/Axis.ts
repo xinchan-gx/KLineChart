@@ -129,6 +129,7 @@ export default abstract class AxisImp implements Axis {
   getParent (): DrawPane { return this._parent }
 
   buildTicks (force: boolean): boolean {
+    // console.log(this._autoCalcTickFlag)
     if (this._autoCalcTickFlag) {
       this._range = this.createRangeImp()
     }

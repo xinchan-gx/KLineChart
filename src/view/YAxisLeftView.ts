@@ -23,13 +23,13 @@ import type { YAxis } from '../component/YAxis'
 
 import AxisView from './AxisView'
 
-export default class YAxisView extends AxisView<YAxis> {
+export default class YAxisLeftView extends AxisView<YAxis> {
   override getAxisStyles (styles: Styles): AxisStyle {
     return styles.yAxis
   }
 
   override createAxisLine (bounding: Bounding, styles: AxisStyle): LineAttrs {
-    const yAxis = this.getWidget().getPane().getAxisComponent()
+    const yAxis = this.getWidget().getPane().getLeftAxisComponent()
     const size = styles.axisLine.size
     let x = 0
     if (yAxis.isFromZero()) {
@@ -46,7 +46,7 @@ export default class YAxisView extends AxisView<YAxis> {
   }
 
   override createTickLines (ticks: AxisTick[], bounding: Bounding, styles: AxisStyle): LineAttrs[] {
-    const yAxis = this.getWidget().getPane().getAxisComponent()
+    const yAxis = this.getWidget().getPane().getLeftAxisComponent()
     const axisLineStyles = styles.axisLine
     const tickLineStyles = styles.tickLine
 
@@ -74,7 +74,7 @@ export default class YAxisView extends AxisView<YAxis> {
   }
 
   override createTickTexts (ticks: AxisTick[], bounding: Bounding, styles: AxisStyle): TextAttrs[] {
-    const yAxis = this.getWidget().getPane().getAxisComponent()
+    const yAxis = this.getWidget().getPane().getLeftAxisComponent()
     const axisLineStyles = styles.axisLine
     const tickLineStyles = styles.tickLine
     const tickTextStyles = styles.tickText
@@ -96,7 +96,7 @@ export default class YAxisView extends AxisView<YAxis> {
         x -= tickLineStyles.length
       }
     }
-    const textAlign = this.getWidget().getPane().getAxisComponent().isFromZero() ? 'left' : 'right'
+    const textAlign = this.getWidget().getPane().getLeftAxisComponent().isFromZero() ? 'left' : 'right'
     return ticks.map(tick => ({
       x,
       y: tick.coord,
@@ -104,5 +104,44 @@ export default class YAxisView extends AxisView<YAxis> {
       align: textAlign,
       baseline: 'middle'
     }))
+  }
+
+  override drawImp (ctx: CanvasRenderingContext2D, extend: unknown[]): void {
+    const widget = this.getWidget()
+    const pane = widget.getPane()
+    const bounding = widget.getBounding()
+    const axis = pane.getLeftAxisComponent()
+    const styles: AxisStyle = this.getAxisStyles(pane.getChart().getStyles())
+    if (styles.show) {
+      if (styles.axisLine.show) {
+        this.createFigure({
+          name: 'line',
+          attrs: this.createAxisLine(bounding, styles),
+          styles: styles.axisLine
+        })?.draw(ctx)
+      }
+      if (!(extend[0] as boolean)) {
+        const ticks = axis.getTicks()
+        if (styles.tickLine.show) {
+          const lines = this.createTickLines(ticks, bounding, styles)
+          lines.forEach(line => {
+            this.createFigure({
+              name: 'line',
+              attrs: line,
+              styles: styles.tickLine
+            })?.draw(ctx)
+          })
+        }
+        if (styles.tickText.show) {
+          const texts = this.createTickTexts(ticks, bounding, styles)
+          const chart = this.getWidget().getPane().getChart()
+          this.createFigure({
+            name: 'text',
+            attrs: texts,
+            styles: styles.tickText
+          })?.draw(ctx, chart)
+        }
+      }
+    }
   }
 }

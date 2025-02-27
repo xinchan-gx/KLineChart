@@ -406,6 +406,7 @@ export default class ChartImp implements Chart {
     if (buildYAxisTick || forceBuildYAxisTick) {
       this._drawPanes.forEach(pane => {
         const success = (pane.getAxisComponent() as AxisImp).buildTicks(forceBuildYAxisTick)
+        ;(pane.getLeftAxisComponent() as AxisImp).buildTicks(forceBuildYAxisTick)
         forceMeasureWidth ||= success
       })
     }
@@ -426,7 +427,6 @@ export default class ChartImp implements Chart {
 
           if (leftAxis.position === AxisPosition.Left) {
             const _leftYAxisWidth = leftAxis.getAutoSize()
-            console.log('🚀 ~ ChartImp ~ _layout ~ _leftYAxisWidth:', _leftYAxisWidth)
             leftYAxisWidth = Math.max(leftYAxisWidth, _leftYAxisWidth)
             if (inside) {
               leftYAxisOutside = false
@@ -435,7 +435,6 @@ export default class ChartImp implements Chart {
 
           if (yAxis.position === AxisPosition.Right) {
             const yAxisWidth = yAxis.getAutoSize()
-            console.log('🚀 ~ ChartImp ~ _layout ~ yAxisWidth:', yAxisWidth)
             rightYAxisWidth = Math.max(rightYAxisWidth, yAxisWidth)
             if (inside) {
               rightYAxisOutside = false
@@ -474,7 +473,6 @@ export default class ChartImp implements Chart {
       }
       this._drawPanes.forEach((pane) => {
         this._separatorPanes.get(pane)?.setBounding(separatorBounding)
-        console.log(paneBounding, mainBounding, leftYAxisBounding, rightYAxisBounding)
         pane.setBounding(paneBounding, mainBounding, leftYAxisBounding, rightYAxisBounding)
       })
     }
@@ -701,7 +699,8 @@ export default class ChartImp implements Chart {
 
   applyNewData (data: KLineData[], more?: boolean | Partial<LoadDataMore>): void {
     this._drawPanes.forEach(pane => {
-      (pane.getAxisComponent() as AxisImp).setAutoCalcTickFlag(true)
+      ;(pane.getAxisComponent() as AxisImp).setAutoCalcTickFlag(true)
+      ;(pane.getLeftAxisComponent() as AxisImp).setAutoCalcTickFlag(true)
     })
     let loadDataMore = { forward: false, backward: false }
     if (isBoolean(more)) {

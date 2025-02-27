@@ -23,6 +23,7 @@ import type { YAxis } from '../component/YAxis'
 import { getYAxisClass } from '../extension/y-axis'
 
 import DrawPane from './DrawPane'
+import YAxisLeftWidget from '../widget/YAxisLeftWidget'
 
 export default class IndicatorPane extends DrawPane<YAxis> {
   override createAxisComponent (name?: string): YAxis {
@@ -35,7 +36,10 @@ export default class IndicatorPane extends DrawPane<YAxis> {
   }
 
   override createYAxisWidget (container: HTMLElement): Nullable<YAxisWidget> {
-    console.log(this)
     return new YAxisWidget(container, this)
+  }
+
+  override createLeftYAxisWidget (container: HTMLElement): Nullable<YAxisLeftWidget> {
+    return new YAxisLeftWidget(container, this)
   }
 }
