@@ -235,6 +235,11 @@ export interface Indicator<D = unknown, C = unknown, E = unknown> {
    * Calculation result
    */
   result: D[]
+
+  /**
+   *
+   */
+  getValueRangeInVisibleRange: Nullable<(indicator: Indicator, chart: Chart) => {max: number, min: number}>
 }
 
 export type IndicatorTemplate<D = unknown, C = unknown, E = unknown> = ExcludePickPartial<Omit<Indicator<D, C, E>, 'result' | 'paneId'>, 'name' | 'calc'>
@@ -327,7 +332,7 @@ export default class IndicatorImp<D = unknown, C = unknown, E = unknown> impleme
   visible = true
   zLevel = 0
   extendData: E
-  getValueRangeInVisibleRange: Nullable<(indicator: Indicator, chart: Chart) => {max: number, min: number}> = null
+  getValueRangeInVisibleRange: Nullable<(indicator: Indicator, chart: Chart) => {max: number, min: number}>
   series = IndicatorSeries.Normal
   figures: Array<IndicatorFigure<D>> = []
   minValue: Nullable<number> = null
