@@ -13,7 +13,7 @@
  */
 
 import type Crosshair from '../common/Crosshair'
-import { type TooltipStyle, type TooltipIconStyle, type TooltipTextStyle, type TooltipLegend, TooltipShowRule, type TooltipLegendChild, TooltipIconPosition } from '../common/Styles'
+import { type TooltipStyle, type TooltipIconStyle, type TooltipTextStyle, type TooltipLegend, TooltipShowRule, type TooltipLegendChild, TooltipIconPosition, type TextStyle, PolygonType } from '../common/Styles'
 import { ActionType } from '../common/Action'
 import { formatPrecision } from '../common/utils/format'
 import { isValid, isObject, isString, isNumber, isFunction } from '../common/utils/typeChecks'
@@ -25,7 +25,7 @@ import type { YAxis } from '../component/YAxis'
 import type { Indicator, IndicatorFigure, IndicatorFigureStyle, IndicatorTooltipData } from '../component/Indicator'
 import { eachFigures } from '../component/Indicator'
 
-import type { TooltipIcon } from '../Store'
+import type { TooltipIcon, TooltipTitle } from '../Store'
 
 import View from './View'
 
@@ -38,6 +38,11 @@ export default class IndicatorTooltipView extends View<YAxis> {
 
   private readonly _boundIconMouseMoveEvent = (currentIconInfo: TooltipIcon) => () => {
     this.getWidget().getPane().getChart().getChartStore().setActiveTooltipIcon({ ...currentIconInfo })
+    return true
+  }
+
+  private readonly _boundTooltipTitleMoveEvent = (currentTitle: TooltipTitle) => () => {
+    this.getWidget().getPane().getChart().getChartStore().setActiveTooltipTitle({ ...currentTitle })
     return true
   }
 
@@ -88,7 +93,7 @@ export default class IndicatorTooltipView extends View<YAxis> {
             if (calcParamsText.length > 0) {
               text = `${text}${calcParamsText}`
             }
-            prevRowHeight = this.drawStandardTooltipLegends(
+            prevRowHeight = this.drawStandardTooltipTitle(
               ctx,
               [
                 {
@@ -96,7 +101,7 @@ export default class IndicatorTooltipView extends View<YAxis> {
                   value: { text, color: tooltipTextStyles.color as string }
                 }
               ],
-              coordinate, left, prevRowHeight, maxWidth, tooltipTextStyles
+              coordinate, left, prevRowHeight, maxWidth, tooltipTextStyles, indicator.name
             )
           }
 
@@ -227,6 +232,67 @@ export default class IndicatorTooltipView extends View<YAxis> {
           name: 'text',
           attrs: { x: coordinate.x + marginLeft + titleTextWidth, y: coordinate.y + marginTop, text: value.text },
           styles: { color: value.color, size, family, weight }
+        })?.draw(ctx)
+        coordinate.x += (marginLeft + totalTextWidth + marginRight)
+      })
+    }
+    return prevRowHeight
+  }
+
+  protected drawStandardTooltipTitle (
+    ctx: CanvasRenderingContext2D,
+    legends: TooltipLegend[],
+    coordinate: Coordinate,
+    left: number,
+    prevRowHeight: number,
+    maxWidth: number,
+    styles: TooltipTextStyle,
+    indicatorName: string
+  ): number {
+    if (legends.length > 0) {
+      const { marginLeft, marginTop, marginRight, marginBottom, size, family, weight } = styles
+      ctx.font = createFont(size, weight, family)
+      const pane = this.getWidget().getPane()
+      const paneId = pane.getId()
+      const activeTitle = pane.getChart().getChartStore().getActiveTooltipTitle()
+      legends.forEach(data => {
+        const title = data.title as TooltipLegendChild
+        const value = data.value as TooltipLegendChild
+        const titleTextWidth = ctx.measureText(title.text).width
+        const valueTextWidth = ctx.measureText(value.text).width
+        const totalTextWidth = titleTextWidth + valueTextWidth
+        const h = marginTop + size + marginBottom
+        if (coordinate.x + marginLeft + totalTextWidth + marginRight > maxWidth) {
+          coordinate.x = left
+          coordinate.y += prevRowHeight
+          prevRowHeight = h
+        } else {
+          prevRowHeight = Math.max(prevRowHeight, h)
+        }
+        if (title.text.length > 0) {
+          this.createFigure({
+            name: 'text',
+            attrs: { x: coordinate.x + marginLeft, y: coordinate.y + marginTop, text: title.text },
+            styles: { color: title.color, size, family, weight }
+          })?.draw(ctx)
+        }
+        const active = activeTitle?.paneId === paneId && activeTitle.indicatorName === indicatorName
+        const activeStyles: Partial<TextStyle> = {}
+        if (active) {
+          activeStyles.borderColor = 'black'
+          activeStyles.style = PolygonType.Stroke
+          activeStyles.borderRadius = 4
+          activeStyles.paddingBottom = 4
+          activeStyles.paddingTop = 6
+          activeStyles.paddingLeft = 4
+          activeStyles.paddingRight = 4
+        }
+        this.createFigure({
+          name: 'text',
+          attrs: { x: coordinate.x + marginLeft + titleTextWidth - (activeStyles.paddingLeft ?? 0), y: coordinate.y + marginTop - (activeStyles.paddingTop ?? 0), text: value.text },
+          styles: { color: value.color, size, family, weight, ...activeStyles }
+        }, {
+          mouseMoveEvent: this._boundTooltipTitleMoveEvent({ paneId, indicatorName })
         })?.draw(ctx)
         coordinate.x += (marginLeft + totalTextWidth + marginRight)
       })

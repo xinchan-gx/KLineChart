@@ -40,6 +40,7 @@ export default class IndicatorWidget extends DrawWidget<DrawPane<YAxis>> {
     this.getContainer().style.cursor = 'crosshair'
     this.registerEvent('mouseMoveEvent', () => {
       pane.getChart().getChartStore().setActiveTooltipIcon()
+      pane.getChart().getChartStore().setActiveTooltipTitle()
       return false
     })
   }

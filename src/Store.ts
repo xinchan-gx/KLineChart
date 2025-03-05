@@ -70,6 +70,11 @@ export interface TooltipIcon {
   iconId: string
 }
 
+export interface TooltipTitle {
+  paneId: string
+  indicatorName: string
+}
+
 export interface ProgressOverlayInfo {
   paneId: string
   overlay: OverlayImp
@@ -293,6 +298,11 @@ export default class StoreImp implements Store {
    * Active tooltip icon info
    */
   private _activeTooltipIcon: Nullable<TooltipIcon> = null
+
+  /**
+   * Active tooltip title info
+   */
+  private _activeTooltipTitle: Nullable<TooltipTitle> = null
 
   /**
    * Actions
@@ -947,6 +957,14 @@ export default class StoreImp implements Store {
 
   setActiveTooltipIcon (icon?: TooltipIcon): void {
     this._activeTooltipIcon = icon ?? null
+  }
+
+  setActiveTooltipTitle (title?: TooltipTitle): void {
+    this._activeTooltipTitle = title ?? null
+  }
+
+  getActiveTooltipTitle (): Nullable<TooltipTitle> {
+    return this._activeTooltipTitle
   }
 
   getActiveTooltipIcon (): Nullable<TooltipIcon> {
