@@ -74,6 +74,7 @@ export interface PolygonStyle {
   borderSize: number
   borderStyle: LineType
   borderDashedValue: number[]
+  lineGradient?: Array<[number, string]>
 }
 
 export interface RectStyle extends PolygonStyle {

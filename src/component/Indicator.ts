@@ -327,6 +327,7 @@ export default class IndicatorImp<D = unknown, C = unknown, E = unknown> impleme
   visible = true
   zLevel = 0
   extendData: E
+  getValueRangeInVisibleRange: Nullable<(indicator: Indicator, chart: Chart) => {max: number, min: number}> = null
   series = IndicatorSeries.Normal
   figures: Array<IndicatorFigure<D>> = []
   minValue: Nullable<number> = null

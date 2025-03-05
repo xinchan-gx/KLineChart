@@ -133,6 +133,15 @@ export function lineTo (ctx: CanvasRenderingContext2D, coordinates: Coordinate[]
     ctx.bezierCurveTo(cpx0, cpy0, lastCoordinate.x, lastCoordinate.y, lastCoordinate.x, lastCoordinate.y)
   } else {
     for (let i = 1; i < length; i++) {
+      if ((coordinates[i].y as null | number) === null) {
+        continue
+      }
+
+      if ((coordinates[i - 1].y as null | number) === null) {
+        ctx.moveTo(coordinates[i].x, coordinates[i].y)
+        continue
+      }
+
       ctx.lineTo(coordinates[i].x, coordinates[i].y)
     }
   }

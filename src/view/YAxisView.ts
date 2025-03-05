@@ -49,7 +49,6 @@ export default class YAxisView extends AxisView<YAxis> {
     const yAxis = this.getWidget().getPane().getAxisComponent()
     const axisLineStyles = styles.axisLine
     const tickLineStyles = styles.tickLine
-
     let startX = 0
     let endX = 0
     if (yAxis.isFromZero()) {

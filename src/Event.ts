@@ -215,7 +215,6 @@ export default class Event implements EventHandler {
       return this._mouseDownWidget.dispatchEvent('pressedMouseMoveEvent', e)
     }
     const { pane, widget } = this._findWidgetByEvent(e)
-
     if (
       widget !== null &&
       this._mouseDownWidget?.getPane().getId() === pane?.getId() &&

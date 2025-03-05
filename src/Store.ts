@@ -635,6 +635,7 @@ export default class StoreImp implements Store {
       { x: 0, price: Number.MIN_SAFE_INTEGER },
       { x: 0, price: Number.MAX_SAFE_INTEGER }
     ]
+
     for (let i = realFrom; i < realTo; i++) {
       const kLineData = this._dataList[i]
       const x = this.dataIndexToCoordinate(i)

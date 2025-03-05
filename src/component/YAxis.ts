@@ -91,6 +91,7 @@ export default abstract class YAxisImp extends AxisImp implements YAxis {
     const indicators = chartStore.getIndicatorsByPaneId(paneId)
     indicators.forEach(indicator => {
       shouldOhlc ||= indicator.shouldOhlc
+
       indicatorPrecision = Math.min(indicatorPrecision, indicator.precision)
       if (isNumber(indicator.minValue)) {
         specifyMin = Math.min(specifyMin, indicator.minValue)
@@ -122,6 +123,7 @@ export default abstract class YAxisImp extends AxisImp implements YAxis {
     visibleRangeDataList.forEach((visibleData) => {
       const dataIndex = visibleData.dataIndex
       const data = visibleData.data.current
+
       if (isValid(data)) {
         if (shouldCompareHighLow) {
           min = Math.min(min, data.low)
@@ -147,6 +149,20 @@ export default abstract class YAxisImp extends AxisImp implements YAxis {
         })
       })
     })
+
+    if (min === Number.MAX_SAFE_INTEGER && max === Number.MIN_SAFE_INTEGER) {
+      indicators.forEach((i) => {
+        if (isFunction(i.getValueRangeInVisibleRange)) {
+          const { min: minValue, max: maxValue } = i.getValueRangeInVisibleRange(i, chartStore.getChart())
+          if (isNumber(minValue)) {
+            min = Math.min(min, minValue)
+          }
+          if (isNumber(maxValue)) {
+            max = Math.max(max, maxValue)
+          }
+        }
+      })
+    }
 
     if (min !== Number.MAX_SAFE_INTEGER && max !== Number.MIN_SAFE_INTEGER) {
       min = Math.min(specifyMin, min)
@@ -310,7 +326,7 @@ export default abstract class YAxisImp extends AxisImp implements YAxis {
         defaultTicks: optimalTicks
       })
     }
-
+    // console.log(optimalTicks, displayRange)
     return optimalTicks
   }
 

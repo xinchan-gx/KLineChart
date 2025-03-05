@@ -50,6 +50,7 @@ export function checkCoordinateOnRect (coordinate: Coordinate, attrs: RectAttrs 
 export function drawRect (ctx: CanvasRenderingContext2D, attrs: RectAttrs | RectAttrs[], styles: Partial<RectStyle>): void {
   let rects: RectAttrs[] = []
   rects = rects.concat(attrs)
+
   const {
     style = PolygonType.Fill,
     color = 'transparent',
@@ -61,10 +62,18 @@ export function drawRect (ctx: CanvasRenderingContext2D, attrs: RectAttrs | Rect
   } = styles
   // eslint-disable-next-line @typescript-eslint/unbound-method, @typescript-eslint/no-unnecessary-condition -- ignore
   const draw = ctx.roundRect ?? ctx.rect
+
   const solid = (style === PolygonType.Fill || styles.style === PolygonType.StrokeFill) && (!isString(color) || !isTransparent(color))
   if (solid) {
     ctx.fillStyle = color
     rects.forEach(({ x, y, width: w, height: h }) => {
+      if ((styles.lineGradient?.length ?? 0) > 0) {
+        const gradient = ctx.createLinearGradient(x, y + h / 2, x + w, y + h / 2)
+        styles.lineGradient!.forEach(colors => {
+          gradient.addColorStop(colors[0], colors[1])
+        })
+        ctx.fillStyle = gradient
+      }
       ctx.beginPath()
       draw.call(ctx, x, y, w, h, r)
       ctx.closePath()
