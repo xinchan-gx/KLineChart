@@ -279,7 +279,7 @@ export default class IndicatorTooltipView extends View<YAxis> {
         const active = activeTitle?.paneId === paneId && activeTitle.indicatorName === indicatorName
         const activeStyles: Partial<TextStyle> = {}
         if (active) {
-          activeStyles.borderColor = 'black'
+          // activeStyles.borderColor = 'black'
           activeStyles.style = PolygonType.Stroke
           activeStyles.borderRadius = 4
           activeStyles.paddingBottom = 4
@@ -295,6 +295,87 @@ export default class IndicatorTooltipView extends View<YAxis> {
           mouseMoveEvent: this._boundTooltipTitleMoveEvent({ paneId, indicatorName })
         })?.draw(ctx)
         coordinate.x += (marginLeft + totalTextWidth + marginRight)
+      })
+    }
+
+    // const actionIcons: Array<Partial<TooltipIconStyle>> = [
+    //   {
+    //     id: 'tooltip-title-close-inner',
+    //     position: TooltipIconPosition.Middle,
+    //     icon: 'e900',
+    //     color: 'black',
+    //     size: 20,
+    //     activeColor: 'blue'
+    //   }
+    // ]
+
+    // prevRowHeight = this.drawTooltipActions(
+    //   ctx, actionIcons as any,
+    //   coordinate, indicatorName,
+    //   left, prevRowHeight, maxWidth
+    // )
+    return prevRowHeight
+  }
+
+  protected drawTooltipActions (
+    ctx: CanvasRenderingContext2D,
+    icons: TooltipIconStyle[],
+    coordinate: Coordinate,
+    indicatorName: string,
+    left: number,
+    prevRowHeight: number,
+    maxWidth: number
+  ): number {
+    if (icons.length > 0) {
+      let width = 0
+      let height = 0
+      icons.forEach(icon => {
+        const {
+          marginLeft = 0, marginTop = 0, marginRight = 0, marginBottom = 0,
+          paddingLeft = 0, paddingTop = 0, paddingRight = 0, paddingBottom = 0,
+          size, fontFamily, icon: text
+        } = icon
+        ctx.font = createFont(size, 'normal', fontFamily)
+        width += (marginLeft + paddingLeft + ctx.measureText(text).width + paddingRight + marginRight)
+        height = Math.max(height, marginTop + paddingTop + size + paddingBottom + marginBottom)
+      })
+      if (coordinate.x + width > maxWidth) {
+        coordinate.x = left
+        coordinate.y += prevRowHeight
+        prevRowHeight = height
+      } else {
+        prevRowHeight = Math.max(prevRowHeight, height)
+      }
+      const pane = this.getWidget().getPane()
+      const paneId = pane.getId()
+      const activeIcon = pane.getChart().getChartStore().getActiveTooltipIcon()
+
+      icons.forEach(icon => {
+        const {
+          marginLeft = 0, marginTop = 0, marginRight = 0,
+          paddingLeft = 0, paddingTop = 0, paddingRight = 0, paddingBottom = 0,
+          color, activeColor, size, fontFamily, icon: text,
+          backgroundColor, activeBackgroundColor
+        } = icon
+        const active = activeIcon?.paneId === paneId && activeIcon.indicatorName === indicatorName && activeIcon.iconId === icon.id
+        this.createFigure({
+          name: 'text',
+          attrs: { text, x: coordinate.x + marginLeft, y: coordinate.y + marginTop },
+          styles: {
+            paddingLeft,
+            paddingTop,
+            paddingRight,
+            paddingBottom,
+            color: active ? activeColor : color,
+            size,
+            family: fontFamily,
+            backgroundColor: active ? activeBackgroundColor : backgroundColor
+          }
+        }, {
+          mouseClickEvent: this._boundIconClickEvent({ paneId, indicatorName, iconId: icon.id }),
+          mouseMoveEvent: this._boundIconMouseMoveEvent({ paneId, indicatorName, iconId: icon.id })
+        })?.draw(ctx)
+        coordinate.x += (marginLeft + paddingLeft + ctx.measureText(text).width + paddingRight + marginRight)
       })
     }
     return prevRowHeight
