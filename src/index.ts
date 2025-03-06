@@ -70,7 +70,6 @@ import { registerOverlay, getOverlayClass, getSupportedOverlays } from './extens
 import { registerStyles } from './extension/styles/index'
 import { registerXAxis } from './extension/x-axis'
 import { registerYAxis } from './extension/y-axis'
-import './extension/iconfonts/style.css'
 
 const charts = new Map<string, ChartImp>()
 let chartBaseId = 1
